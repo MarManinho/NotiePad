@@ -10,6 +10,9 @@ import SwiftData
 
 struct CreateView: View {
     @State private var searchText: String = ""
+    @State private var isPresentingTaskEditor = false
+    @State private var taskToEdit: Task? // Used for editing if necessary
+
     var body: some View {
         VStack {
             ScrollView {
@@ -60,7 +63,7 @@ struct CreateView: View {
                         // New Task Button with Image
                         VStack(spacing: 4) {
                             Button(action: {
-                                // Action for New Task Image Button
+                                isPresentingTaskEditor = true // Open the task creation sheet
                             }) {
                                 Image("NewTask")
                                     .resizable()
@@ -69,7 +72,7 @@ struct CreateView: View {
                             }
 
                             Button(action: {
-                                // Action for Add Task Text Button
+                                isPresentingTaskEditor = true // Open the task creation sheet
                             }) {
                                 Text("Add a new task")
                                     .font(.custom("Helvetica Bold", size: 16))
@@ -104,6 +107,12 @@ struct CreateView: View {
             }
         }
         .background(Color(.systemBackground))
+        .sheet(isPresented: $isPresentingTaskEditor) {
+            TaskViewEditor(task: $taskToEdit) { name, dueDate in
+                // Add the new task to the shared TaskManager
+                TaskManager.shared.addTask(name: name, dueDate: dueDate)
+                isPresentingTaskEditor = false
+            }
+        }
     }
 }
-
